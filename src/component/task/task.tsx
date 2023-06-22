@@ -24,14 +24,16 @@ type FormValues = {
 const TaskC: FC<any> = ({ data, updateTask, message }: { data: any, updateTask: () => Promise<void>, message: (message: string) => void }) => {
     const [dueDate, setDueDate] = useState(data?.dueDate || new Date());
     const [isChecked, setIsChecked] = useState(false);
+    const [loading, setLoading] = useState(false)
     const todoService = new TodoService
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FormValues>({});
-
     const handleCheckboxChange = async (event: any) => {
         const isChecked = event.target.checked;
         let status = isChecked ? 1 : 0
+        setLoading(true)
         let [dataa, err] = await todoService.update(data?.id, { ...data, status: status })
         if (!err) {
+            setLoading(false)
             await updateTask()
             setIsChecked(isChecked)
             isChecked && message('Very well! 🎉🎉')
@@ -69,14 +71,18 @@ const TaskC: FC<any> = ({ data, updateTask, message }: { data: any, updateTask: 
     }
     const onSubmit = handleSubmit(async (dataF: FormValues) => {
         if (Object.keys({ ...data }).length !== 0) {
+            setLoading(true)
             let [res, err] = await todoService.update(Number(data?.id), { ...dataF, status: Number(data?.status) })
             if (!err) {
+                setLoading(false)
                 message('Update Successfuly!')
             }
         }
         else {
+            setLoading(true)
             let [data, err] = await todoService.create({ ...dataF, status: 0, dueDate: dueDate })
             if (!err) {
+                setLoading(false)
                 reset()
                 message('Create Successfuly!')
             }
@@ -85,55 +91,58 @@ const TaskC: FC<any> = ({ data, updateTask, message }: { data: any, updateTask: 
 
     });
     return (
-        <div className={style.task} style={{ backgroundColor: Object.keys({ ...data }).length === 0 ? "#FBFFDC" : "" }}>
-            {Object.keys({ ...data }).length !== 0
-                ?
-                <div style={{ backgroundPosition: !data.status ? '' : "left top" }} className={style.header}>
-                    <div >
-                        <input type="checkbox" checked={data.status} id={'h' + String(data?.id)} onChange={(e) => handleCheckboxChange(e)} />
-                        <label htmlFor={'h' + String(data?.id)} className={style.taskTitle}>{data?.title}</label>
-                    </div>
-                    <div >
-                        <button onClick={showDetail}>detail</button>
-                        <button onClick={() => deleteTask(Number(data?.id))}>Remove</button>
-                    </div>
-                </div>
-                :
-                <h3 style={{ textAlign: "center", paddingTop: '30px' }}>New Task</h3>}
-            <form action="#" id={'contForm' + data?.id} className={style.showDetail} onSubmit={onSubmit}>
-                <div className={style.form_task} id={'form' + data?.id}>
-                    <input type="text" style={{ borderColor: errors.title ? "red" : '' }} placeholder='Add new task title...' defaultValue={data?.title} {...register("title", { required: true })} />
-                    {errors.title && <span style={{ color: 'red' }}>Title is required</span>}
-                    <label htmlFor="desc">Description</label>
-                    <textarea {...register("description")} cols={30} rows={10}>
-                        {data?.description}
-                    </textarea>
-                    <div className={style.row}>
-                        <div className={style.col}>
-                            <label htmlFor="due">Due Date</label>
-                            <DatePicker closeOnScroll={true} minDate={new Date()} selected={dueDate} onChange={(dueDate: Date) => {
-
-
-                                setDueDate(dueDate)
-                            }} />
-                            <input type="hidden"  {...register("dueDate", { value: dueDate })} />
+        <>
+            {loading && <div className={style.loading}>
+                <div className={style.custom_loader}></div>
+            </div>}
+            <div className={style.task} style={{ backgroundColor: Object.keys({ ...data }).length === 0 ? "#FBFFDC" : "" }}>
+                {Object.keys({ ...data }).length !== 0
+                    ?
+                    <div style={{ backgroundPosition: !data.status ? '' : "left top" }} className={style.header}>
+                        <div >
+                            <input type="checkbox" checked={data.status} id={'h' + String(data?.id)} onChange={(e) => handleCheckboxChange(e)} />
+                            <label htmlFor={'h' + String(data?.id)} className={style.taskTitle}>{data?.title}</label>
                         </div>
-                        <div className={style.col}>
-                            <label htmlFor="priority">Priority</label>
-                            <select {...register("priority")} defaultValue={data?.priority}>
-                                <option value="normal">Normal</option>
-                                <option value="low">Low</option>
-                                {/* <option value="medium">Medium</option> */}
-                                <option value="high">High</option>
-                            </select>
+                        <div >
+                            <button onClick={showDetail}>detail</button>
+                            <button onClick={() => deleteTask(Number(data?.id))}>Remove</button>
                         </div>
                     </div>
-                    {Object.keys({ ...data }).length !== 0 ? <button type="submit">update</button> : <button type="submit">Add</button>}
-                </div>
-            </form>
-        </div>
+                    :
+                    <h3 style={{ textAlign: "center", paddingTop: '30px' }}>New Task</h3>}
+                <form action="#" id={'contForm' + data?.id} className={style.showDetail} onSubmit={onSubmit}>
+                    <div className={style.form_task} id={'form' + data?.id}>
+                        <input type="text" style={{ borderColor: errors.title ? "red" : '' }} placeholder='Add new task title...' defaultValue={data?.title} {...register("title", { required: true })} />
+                        {errors.title && <span style={{ color: 'red' }}>Title is required</span>}
+                        <label htmlFor="desc">Description</label>
+                        <textarea {...register("description")} cols={30} rows={10}>
+                            {data?.description}
+                        </textarea>
+                        <div className={style.row}>
+                            <div className={style.col}>
+                                <label htmlFor="due">Due Date</label>
+                                <DatePicker closeOnScroll={true} minDate={new Date()} selected={dueDate} onChange={(dueDate: Date) => {
 
 
+                                    setDueDate(dueDate)
+                                }} />
+                                <input type="hidden"  {...register("dueDate", { value: dueDate })} />
+                            </div>
+                            <div className={style.col}>
+                                <label htmlFor="priority">Priority</label>
+                                <select {...register("priority")} defaultValue={data?.priority}>
+                                    <option value="normal">Normal</option>
+                                    <option value="low">Low</option>
+                                    {/* <option value="medium">Medium</option> */}
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+                        {Object.keys({ ...data }).length !== 0 ? <button type="submit">update</button> : <button type="submit">Add</button>}
+                    </div>
+                </form>
+            </div>
+        </>
     );
 }
 export default TaskC
