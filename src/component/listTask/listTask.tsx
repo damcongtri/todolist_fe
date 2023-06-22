@@ -29,7 +29,7 @@ const ListTask: FC<any> = () => {
 
     const handleSearch = (e: any) => {
         // console.log(e.target.value);
-        e.target.value ? setTasksData(() => data.filter((item: any) => String(item.title).includes(e.target.value))) : getAll()
+        e.target.value ? setTasksData(() => data.filter((item: any) => item.title.toLowerCase().includes(e.target.value.toLowerCase()))) : getAll()
     }
     return (
         <>
