@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-    baseURL: "http://localhost:5678",
+    baseURL: "https://todolist-chi-two.vercel.app",
 });
 
 export default axiosClient;

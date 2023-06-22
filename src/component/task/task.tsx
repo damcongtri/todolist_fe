@@ -91,9 +91,9 @@ const TaskC: FC<any> = ({ data, updateTask, message }: { data: any, updateTask: 
         <div className={style.task} style={{ backgroundColor: Object.keys({ ...data }).length === 0 ? "#FBFFDC" : "" }}>
             {Object.keys({ ...data }).length !== 0
                 ?
-                <div style={{ backgroundPosition: !isChecked ? '' : "left top" }} className={style.header}>
+                <div style={{ backgroundPosition: !data.status ? '' : "left top" }} className={style.header}>
                     <div >
-                        <input type="checkbox" checked={isChecked} id={'h' + String(data?.id)} onChange={(e) => handleCheckboxChange(e)} />
+                        <input type="checkbox" checked={data.status} id={'h' + String(data?.id)} onChange={(e) => handleCheckboxChange(e)} />
                         <label htmlFor={'h' + String(data?.id)} className={style.taskTitle}>{data?.title}</label>
                     </div>
                     <div >
