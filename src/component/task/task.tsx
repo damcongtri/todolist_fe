@@ -62,8 +62,10 @@ const TaskC: FC<any> = ({ data, updateTask, message }: { data: any, updateTask: 
 
     const deleteTask = async (id: number) => {
         if (id) {
+            setLoading(true)
             let [data, err] = await todoService.delete(id)
             if (!err) {
+                setLoading(false)
                 await updateTask()
                 message('Delete Successfuly!')
             }
