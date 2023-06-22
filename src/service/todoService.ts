@@ -10,22 +10,22 @@ export interface Task {
 }
 class TodoService {
     async getAll() {
-        return await axiosClient.get('http://localhost:5678/todo')
+        return await axiosClient.get('/todo')
             .then((data) => [data.data, null])
             .catch((e) => [null, e])
     }
     async create(data: Task) {
-        return await axiosClient.post('http://localhost:5678/todo', data)
+        return await axiosClient.post('/todo', data)
             .then((data) => [data, null])
             .catch((e) => [null, e])
     }
     async update(id: number, data: Task) {
-        return await axiosClient.put('http://localhost:5678/todo/' + id, data)
+        return await axiosClient.put('/todo/' + id, data)
             .then((data) => [data, null])
             .catch((e) => [null, e])
     }
     async delete(id: number) {
-        return await axiosClient.delete('http://localhost:5678/todo/' + id)
+        return await axiosClient.delete('/todo/' + id)
             .then((data) => [data, null])
             .catch((e) => [null, e])
     }

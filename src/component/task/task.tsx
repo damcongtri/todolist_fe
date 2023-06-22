@@ -28,9 +28,14 @@ const TaskC: FC<any> = ({ data, updateTask, message }: { data: any, updateTask: 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FormValues>({});
     console.log('err', errors);
 
-    const handleCheckboxChange = (event: any) => {
+    const handleCheckboxChange = async (event: any) => {
         const isChecked = event.target.checked;
-        setIsChecked(isChecked)
+        let status = isChecked ? 1 : 0
+        let [dataa, err] = await todoService.update(data?.id, { ...data, status: status })
+        if (!err) {
+            setIsChecked(isChecked)
+            isChecked && message('Very well! 🎉🎉')
+        }
         console.log(isChecked);
     }
     const showDetail = () => {
@@ -65,7 +70,6 @@ const TaskC: FC<any> = ({ data, updateTask, message }: { data: any, updateTask: 
         }
     }
     const onSubmit = handleSubmit(async (dataF: FormValues) => {
-        console.log('dả', dataF);
         if (Object.keys({ ...data }).length !== 0) {
             let [res, err] = await todoService.update(Number(data?.id), { ...dataF, status: Number(data?.status) })
             if (!err) {
@@ -88,8 +92,8 @@ const TaskC: FC<any> = ({ data, updateTask, message }: { data: any, updateTask: 
             {Object.keys({ ...data }).length !== 0
                 ?
                 <div style={{ backgroundPosition: !isChecked ? '' : "left top" }} className={style.header}>
-                    <div>
-                        <input type="checkbox" id={'h' + String(data?.id)} onChange={(e) => handleCheckboxChange(e)} />
+                    <div >
+                        <input type="checkbox" checked={isChecked} id={'h' + String(data?.id)} onChange={(e) => handleCheckboxChange(e)} />
                         <label htmlFor={'h' + String(data?.id)} className={style.taskTitle}>{data?.title}</label>
                     </div>
                     <div >
