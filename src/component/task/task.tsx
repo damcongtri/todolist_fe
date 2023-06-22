@@ -26,17 +26,16 @@ const TaskC: FC<any> = ({ data, updateTask, message }: { data: any, updateTask: 
     const [isChecked, setIsChecked] = useState(false);
     const todoService = new TodoService
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FormValues>({});
-    console.log('err', errors);
 
     const handleCheckboxChange = async (event: any) => {
         const isChecked = event.target.checked;
         let status = isChecked ? 1 : 0
         let [dataa, err] = await todoService.update(data?.id, { ...data, status: status })
         if (!err) {
+            await updateTask()
             setIsChecked(isChecked)
             isChecked && message('Very well! 🎉🎉')
         }
-        console.log(isChecked);
     }
     const showDetail = () => {
         const contForm = document.getElementById('contForm' + data?.id) as HTMLElement
@@ -45,7 +44,6 @@ const TaskC: FC<any> = ({ data, updateTask, message }: { data: any, updateTask: 
 
         let maxHeight = content.scrollHeight
 
-        // console.log(content[0].clientHeight);
         if (contForm.clientHeight) {
             contForm.style.height = '0'
         } else {
@@ -77,7 +75,6 @@ const TaskC: FC<any> = ({ data, updateTask, message }: { data: any, updateTask: 
             }
         }
         else {
-            console.log({ ...dataF, status: 0 });
             let [data, err] = await todoService.create({ ...dataF, status: 0, dueDate: dueDate })
             if (!err) {
                 reset()
@@ -115,7 +112,7 @@ const TaskC: FC<any> = ({ data, updateTask, message }: { data: any, updateTask: 
                         <div className={style.col}>
                             <label htmlFor="due">Due Date</label>
                             <DatePicker closeOnScroll={true} minDate={new Date()} selected={dueDate} onChange={(dueDate: Date) => {
-                                console.log('date', dueDate);
+
 
                                 setDueDate(dueDate)
                             }} />
