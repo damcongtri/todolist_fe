@@ -5,6 +5,7 @@ import TodoService from "../../service/todoService";
 const ListTask: FC<any> = () => {
     const [checkAdd, setCheckAdd]: any = useState(false)
     const [message, setMessage] = useState('')
+    const [loading, setLoading] = useState(false)
     const [search, setSearch] = useState('')
     const todoService = new TodoService
     const [data, setData] = useState([])
@@ -23,8 +24,13 @@ const ListTask: FC<any> = () => {
             setMessage('')
         }, 3000)
     }
+    let getData = async () => {
+        setLoading(true)
+        await getAll()
+        setLoading(false)
+    }
     useEffect(() => {
-        getAll()
+        getData()
     }, [])
 
     const handleSearch = (e: any) => {
@@ -33,7 +39,9 @@ const ListTask: FC<any> = () => {
     }
     return (
         <>
-
+            {loading && <div className={style.loading}>
+                <div className={style.custom_loader}></div>
+            </div>}
             {message && <div className={style.nofication}>
                 {message}
             </div>}
